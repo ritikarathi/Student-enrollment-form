@@ -1,16 +1,224 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<title>Student Enrollment Form</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 </head>
-<body style="background-color: black; color: white; font-size: 20px;">
-    <ul id="root">
-        <li>Ritika Rathi</li>
-        <li>Intelligent</li>
-        <li>Millionair</li>
-    </ul>
-    <script src="./first.js"></script>
+<body>
+<div class="container">
+<h2>Student Enrollment Form</h2>
+
+<form id="studentForm">
+
+<!-- Roll No -->
+<div class="form-group">
+<label>Roll No:</label>
+<input type="text" id="roll" class="form-control" autofocus>
+</div>
+
+<!-- Full Name -->
+<div class="form-group">
+<label>Full Name:</label>
+<input type="text" id="fullname" class="form-control" disabled>
+</div>
+
+<!-- Class -->
+<div class="form-group">
+<label>Class:</label>
+<input type="text" id="class" class="form-control" disabled>
+</div>
+
+<!-- Birth Date -->
+<div class="form-group">
+<label>Birth Date:</label>
+<input type="date" id="dob" class="form-control" disabled>
+</div>
+
+<!-- Address -->
+<div class="form-group">
+<label>Address:</label>
+<input type="text" id="address" class="form-control" disabled>
+</div>
+
+<!-- Enrollment Date -->
+<div class="form-group">
+<label>Enrollment Date:</label>
+<input type="date" id="edate" class="form-control" disabled>
+</div>
+
+<!-- Buttons -->
+<input type="button" value="Save" id="saveBtn" class="btn btn-success" disabled onclick="saveStudent();">
+<input type="button" value="Update" id="updateBtn" class="btn btn-warning" disabled onclick="updateStudent();">
+<input type="button" value="Reset" id="resetBtn" class="btn btn-primary" disabled onclick="resetForm();">
+
+</form>
+</div>
+
+<script>
+// CONSTANTS
+const token = "90934869|-31949257902709294|90958043";
+const dbName = "SCHOOL-DB";
+const relName = "STUDENT-TABLE";
+
+// ---------------------- CREATE REQUESTS --------------------------
+function createPUTRequest(token, jsonObj, dbName, relName) {
+return "{\n" +
+"\"token\":\"" + token + "\"," +
+"\"dbName\":\"" + dbName + "\"," +
+"\"cmd\":\"PUT\"," +
+"\"rel\":\"" + relName + "\"," +
+"\"jsonStr\":" + jsonObj + "\n}";
+}
+
+function createGET_BY_KEYRequest(token, dbName, relName, jsonStr) {
+return "{\n" +
+"\"token\":\"" + token + "\"," +
+"\"dbName\":\"" + dbName + "\"," +
+"\"cmd\":\"GET_BY_KEY\"," +
+"\"rel\":\"" + relName + "\"," +
+"\"jsonStr\":" + jsonStr + "\n}";
+}
+
+function createUPDATERecordRequest(token, jsonObj, dbName, relName, recNo) {
+return "{\n" +
+"\"token\":\"" + token + "\"," +
+"\"dbName\":\"" + dbName + "\"," +
+"\"cmd\":\"UPDATE\"," +
+"\"rel\":\"" + relName + "\"," +
+"\"record\":" + jsonObj + "," +
+"\"rec_no\":" + recNo + "\n}";
+}
+
+function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+var url = dbBaseUrl + apiEndPointUrl;
+var jsonObj;
+$.post(url, reqString, function (result) {
+jsonObj = JSON.parse(result);
+}).fail(function (result) {
+var data = result.responseText;
+jsonObj = JSON.parse(data);
+});
+return jsonObj;
+}
+
+// ---------------------- VALIDATE FORM --------------------------
+function validateAndGetFormData() {
+let roll = $("#roll").val();
+let name = $("#fullname").val();
+let clas = $("#class").val();
+let dob = $("#dob").val();
+let addr = $("#address").val();
+let edate = $("#edate").val();
+
+if (!roll || !name || !clas || !dob || !addr || !edate) {
+alert("All fields are required!");
+return "";
+}
+
+let jsonObj = {
+Roll_No: roll,
+Full_Name: name,
+Class: clas,
+Birth_Date: dob,
+Address: addr,
+Enrollment_Date: edate
+};
+
+return JSON.stringify(jsonObj);
+}
+
+// ---------------------- SAVE STUDENT --------------------------
+function saveStudent() {
+let jsonStr = validateAndGetFormData();
+if (jsonStr === "") return;
+
+let putReq = createPUTRequest(token, jsonStr, dbName, relName);
+
+jQuery.ajaxSetup({async: false});
+let result = executeCommand(putReq, "http://api.login2explore.com:5577", "/api/iml");
+alert("Saved Successfully!\n" + JSON.stringify(result));
+jQuery.ajaxSetup({async: true});
+
+resetForm();
+}
+
+// ---------------------- UPDATE STUDENT --------------------------
+function updateStudent() {
+let jsonStr = validateAndGetFormData();
+if (jsonStr === "") return;
+
+let recNo = localStorage.getItem("recno");
+
+let updateReq = createUPDATERecordRequest(token, jsonStr, dbName, relName, recNo);
+
+jQuery.ajaxSetup({async: false});
+let result = executeCommand(updateReq, "http://api.login2explore.com:5577", "/api/iml");
+alert("Updated Successfully!\n" + JSON.stringify(result));
+jQuery.ajaxSetup({async: true});
+
+resetForm();
+}
+
+// ---------------------- ON ROLL NO CHANGE --------------------------
+$("#roll").on("change", function () {
+let roll = $("#roll").val();
+let getReq = createGET_BY_KEYRequest(token, dbName, relName, JSON.stringify({Roll_No: roll}));
+
+jQuery.ajaxSetup({async: false});
+let result = executeCommand(getReq, "http://api.login2explore.com:5577", "/api/irl");
+jQuery.ajaxSetup({async: true});
+
+if (result.status === 400) {
+enableSaveMode();
+} else {
+let data = JSON.parse(result.data).record;
+localStorage.setItem("recno", JSON.parse(result.data).rec_no);
+fillData(data);
+enableUpdateMode();
+}
+});
+
+// ---------------------- FILL DATA WHEN FOUND --------------------------
+function fillData(data) {
+$("#fullname").val(data.Full_Name);
+$("#class").val(data.Class);
+$("#dob").val(data.Birth_Date);
+$("#address").val(data.Address);
+$("#edate").val(data.Enrollment_Date);
+}
+
+// ---------------------- ENABLE MODES --------------------------
+function enableSaveMode() {
+$("#fullname, #class, #dob, #address, #edate").prop("disabled", false);
+$("#saveBtn").prop("disabled", false);
+$("#resetBtn").prop("disabled", false);
+$("#updateBtn").prop("disabled", true);
+}
+
+function enableUpdateMode() {
+$("#roll").prop("disabled", true);
+$("#fullname, #class, #dob, #address, #edate").prop("disabled", false);
+$("#updateBtn").prop("disabled", false);
+$("#resetBtn").prop("disabled", false);
+$("#saveBtn").prop("disabled", true);
+}
+
+// ---------------------- RESET --------------------------
+function resetForm() {
+$("#studentForm").trigger("reset");
+$("#roll").prop("disabled", false);
+$("#fullname, #class, #dob, #address, #edate").prop("disabled", true);
+$("#saveBtn, #updateBtn, #resetBtn").prop("disabled", true);
+$("#roll").focus();
+}
+</script>
+
 </body>
 </html>

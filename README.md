@@ -1,109 +1,91 @@
-Student Enrollment Form – Micro Project
+Project Title:
 
-This project is a simple web-based Student Enrollment Form that performs Create and Update operations using JSONPowerDB (JPDB) as the backend database.
-It follows all rules of data validation, primary key handling, and form control enabling/disabling.
+Student Enrollment Form using JsonPowerDB
 
-⭐ Project Overview
+Description:
 
-The form stores data in STUDENT-TABLE of the SCHOOL-DB database.
-It works with three control buttons:
+This project is a web-based Student Enrollment Form created as a micro-project to demonstrate CRUD operations using JsonPowerDB (JPDB).
+It allows users to:
 
-Save – Inserts data when Roll-No (primary key) does not exist
+Insert (Save) new student records
 
-Update – Updates data when Roll-No already exists
+Update existing student records
 
-Reset – Clears and resets the form
+Reset the form anytime
 
-The form always starts with Roll-No enabled and all other fields + buttons disabled.
+Automatically validate primary key (Roll No.)
 
-🧾 Input Fields
+Interact with a real NoSQL database without writing server-side code
 
-The form uses the following fields:
-
-Roll-No (Primary Key)
-
-Full-Name
-
-Class
-
-Birth-Date
-
-Address
-
-Enrollment-Date
-
-🎯 Features
-
-Roll-No based search using JPDB
-
-Validates empty fields
-
-Smart form control enabling/disabling
-
-Insert new student data
-
-Update already existing student data
-
-Auto-focus logic for better UX
-
-Works without backend server (uses JPDB API)
-
-🛠️ Tech Stack
-
-HTML5
-
-CSS3
-
-JavaScript
-
-JSONPowerDB (JPDB)
-
-jQuery
-
-🗂️ Database Details
-
+The database used is:
 Database: SCHOOL-DB
 Table: STUDENT-TABLE
 Primary Key: Roll-No
 
-🔗 JPDB API Used
+Scope of Functionalities:
 
-GET_BY_KEY → Check if Roll No exists
+The form includes the following features:
 
-PUT → Save new data
+Roll-No based search using JPDB API
 
-UPDATE → Update existing data
+Auto-enable/disable form fields
 
-🚀 How the Project Works
+Save new Student data (PUT request)
 
-On page load → Only Roll-No field is enabled
+Update existing Student data (UPDATE request)
 
-User enters Roll-No
+Reset form fields
 
-System checks:
+Field validations: no empty fields allowed
 
-If Roll-No does not exist → Enable Save + Reset
+Auto-focus on next field
 
-If Roll-No exists → Show data, enable Update + Reset
+JSON request creation and parsing
 
-User enters remaining fields
+Works without any backend server
 
-Click Save or Update
+Benefits of Using JsonPowerDB
 
-Form resets automatically
+JsonPowerDB (JPDB) offers several advantages:
 
-📁 Project File Structure
-student-enrollment/
-│── index.html
-│── script.js
-│── README.md
+High performance — extremely fast read/write operations
 
-📸 Screenshot
+Simple to use — NoSQL database with minimal setup
 
-(Add your form screenshot here)
+No server-side code required — frontend can directly interact with database
 
-👩‍💻 Author
+Schema-free data storage — flexible for student records
 
-Ritika Rathi
-Student – Computer Science
-Micro Project on JSONPowerDB
+Built-in security — token-based authentication
+
+Low development cost — lightweight, free for educational projects
+
+Reduced boilerplate code — eliminates need for back-end frameworks
+
+Ideal for real-time applications — instant data update and retrieval
+
+Examples of Use
+
+This project can be used in:
+
+School and college admission systems
+
+Coaching center student onboarding
+
+Small institutes student database
+
+Quick prototypes requiring instant database integration
+
+Project Status
+🟢 Completed
+The project is fully functional with Save, Update, Validation, and Reset features implemented.
+
+
+Sources:
+
+JsonPowerDB Official Documentation
+Login2Explore Educational Resources
+
+HTML, CSS, JavaScript
+
+GitHub Markdown Guide
